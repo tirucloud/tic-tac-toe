@@ -34,20 +34,22 @@ jobs:
           DOCKER_CLI_ACI: 1
       - name: Image scan
         run: trivy image tirucloud/tic-tac-toe:latest > trivyimage.txt
-  deploy:
+  deploy_to_container:
    needs: build-analyze-scan
    runs-on: [tiru]
    steps:
+      - name: stop contianer
+        run: docker rm -f ttgamecon || true
       - name: docker pull image
         run: docker pull tirucloud/tic-tac-toe:latest
       - name: Image scan
         run: trivy image tirucloud/tic-tac-toe:latest > trivyimagedeploy.txt
       - name: Deploy to container
-        run: docker run -d --name game -p 3000:3000 tirucloud/tic-tac-toe:latest
+        run: docker run -d --name ttgamecon -p 3000:3000 tirucloud/tic-tac-toe:latest
       
   deploy_to_kubernetes:
     runs-on: [tiru]
-    needs: build-analyze-scan
+    needs: deploy_to_container
     env:
      AWS_REGION: us-east-1
      CLUSTER_NAME: tiru-cluster
