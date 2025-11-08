@@ -6,7 +6,7 @@ on:
 jobs:
   build-analyze-scan:
     name: Build
-    runs-on: [tiru]
+    runs-on: [thiru]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
         run: trivy image tirucloud/tic-tac-toe:latest > trivyimage.txt
   deploy_to_container:
    needs: build-analyze-scan
-   runs-on: [tiru]
+   runs-on: [thiru]
    steps:
       - name: stop contianer
         run: docker rm -f ttgamecon || true
@@ -48,11 +48,11 @@ jobs:
         run: docker run -d --name ttgamecon -p 3000:3000 tirucloud/tic-tac-toe:latest
       
   deploy_to_kubernetes:
-    runs-on: [tiru]
+    runs-on: [thiru]
     needs: deploy_to_container
     env:
      AWS_REGION: us-east-1
-     CLUSTER_NAME: tiru-cluster
+     CLUSTER_NAME: thiru-cluster
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
     - name: Configure AWS and Kubeconfig
       env:
        AWS_REGION: us-east-1
-       CLUSTER_NAME: tiru-cluster
+       CLUSTER_NAME: thiru-cluster
       run: |
        mkdir -p ~/.kube
        aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
